@@ -281,3 +281,118 @@ function renderTable(filterQuery = '') {
         elements.tableBody.appendChild(tr);
     });
 }
+
+// ----------------------------------------------------
+// Upload Modal Logic
+// ----------------------------------------------------
+const uploadBtn = document.getElementById('uploadBtn');
+const uploadModal = document.getElementById('uploadModal');
+const closeModalBtns = document.querySelectorAll('.close-modal');
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+const uploadProgressBar = document.getElementById('uploadProgressBar');
+const uploadStatusText = document.getElementById('uploadStatusText');
+const fileNameDisplay = document.getElementById('fileName');
+const fileIconDisplay = document.getElementById('fileIcon');
+
+// Open Modal
+uploadBtn.addEventListener('click', () => {
+    uploadModal.classList.add('active');
+    resetUploadUI();
+});
+
+// Close Modal
+const closeModal = () => {
+    uploadModal.classList.remove('active');
+};
+
+closeModalBtns.forEach(btn => btn.addEventListener('click', closeModal));
+
+// Close on outside click
+uploadModal.addEventListener('click', (e) => {
+    if (e.target === uploadModal) closeModal();
+});
+
+// Drag and Drop Events
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
+});
+
+uploadArea.addEventListener('drop', handleDrop, false);
+fileInput.addEventListener('change', handleFileSelect, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+        handleFiles(files[0]);
+    }
+}
+
+function handleFileSelect(e) {
+    const files = e.target.files;
+    if (files.length > 0) {
+        handleFiles(files[0]);
+    }
+}
+
+function handleFiles(file) {
+    // Determine icon
+    const ext = file.name.split('.').pop().toLowerCase();
+    let iconClass = 'bx-file-blank';
+    if (['pdf'].includes(ext)) iconClass = 'bxs-file-pdf';
+    else if (['doc', 'docx'].includes(ext)) iconClass = 'bxs-file-doc';
+    else if (['xls', 'xlsx', 'csv'].includes(ext)) iconClass = 'bxs-file-blank'; // No direct excel icon in basic boxicons, use blank
+    else if (['png', 'jpg', 'jpeg'].includes(ext)) iconClass = 'bxs-image';
+
+    fileIconDisplay.className = `bx ${iconClass}`;
+    fileNameDisplay.textContent = file.name;
+    
+    // Simulate Upload Process
+    uploadArea.style.display = 'none';
+    uploadProgressContainer.classList.remove('hidden');
+    uploadProgressBar.style.width = '0%';
+    uploadStatusText.textContent = 'กำลังอัปโหลด... 0%';
+    uploadStatusText.classList.remove('text-success');
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            
+            uploadProgressBar.style.width = '100%';
+            uploadStatusText.textContent = 'อัปโหลดเสร็จสมบูรณ์!';
+            uploadStatusText.classList.add('text-success');
+            
+            // Auto close after success
+            setTimeout(() => {
+                closeModal();
+            }, 2000);
+        } else {
+            uploadProgressBar.style.width = progress + '%';
+            uploadStatusText.textContent = `กำลังอัปโหลด... ${progress}%`;
+        }
+    }, 300);
+}
+
+function resetUploadUI() {
+    uploadArea.style.display = 'block';
+    uploadProgressContainer.classList.add('hidden');
+    fileInput.value = '';
+}
