@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard ผู้บริหาร - โรงเรียนอนุบาลหมีน้อย</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar / Header Area -->
+        <header class="glass-panel main-header">
+            <div class="logo">
+                <i class='bx bxs-school'></i>
+                <div>
+                    <h1>โรงเรียนอนุบาลหมีน้อย</h1>
+                    <p>ระบบติดตามแผนงานโครงการ (Project Tracking Dashboard)</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="last-update" id="lastUpdate">
+                    <i class='bx bx-time-five'></i> อัปเดตล่าสุด: กำลังโหลด...
+                </div>
+                <button id="refreshBtn" class="btn-refresh" title="รีเฟรชข้อมูล">
+                    <i class='bx bx-refresh'></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="glass-panel kpi-card">
+                <div class="kpi-icon blue">
+                    <i class='bx bx-folder'></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>โครงการทั้งหมด</h3>
+                    <p class="kpi-value" id="kpiTotalProjects">0</p>
+                </div>
+            </div>
+            <div class="glass-panel kpi-card">
+                <div class="kpi-icon green">
+                    <i class='bx bx-wallet'></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>งบประมาณรวม (บาท)</h3>
+                    <p class="kpi-value" id="kpiTotalBudget">0</p>
+                </div>
+            </div>
+            <div class="glass-panel kpi-card">
+                <div class="kpi-icon purple">
+                    <i class='bx bx-trending-up'></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>ใช้ไปแล้ว (บาท)</h3>
+                    <p class="kpi-value" id="kpiUsedBudget">0</p>
+                </div>
+            </div>
+            <div class="glass-panel kpi-card">
+                <div class="kpi-icon orange">
+                    <i class='bx bx-pie-chart-alt-2'></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>คงเหลือ (บาท)</h3>
+                    <p class="kpi-value" id="kpiRemainingBudget">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Area -->
+        <div class="charts-grid">
+            <div class="glass-panel chart-container">
+                <h2>ภาพรวมงบประมาณรายกลุ่มงาน</h2>
+                <div class="chart-wrapper">
+                    <canvas id="budgetByGroupChart"></canvas>
+                </div>
+            </div>
+            <div class="glass-panel chart-container">
+                <h2>สถานะโครงการ</h2>
+                <div class="chart-wrapper">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+            <div class="glass-panel chart-container full-width">
+                <h2>ความคืบหน้าโครงการและงบประมาณ</h2>
+                <div class="chart-wrapper" style="height: 300px;">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="glass-panel table-container">
+            <div class="table-header">
+                <h2>รายละเอียดโครงการ</h2>
+                <div class="search-box">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="searchInput" placeholder="ค้นหาโครงการ...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="projectsTable">
+                    <thead>
+                        <tr>
+                            <th>รหัส</th>
+                            <th>ชื่อโครงการ</th>
+                            <th>ผู้รับผิดชอบ</th>
+                            <th>กลุ่มงาน</th>
+                            <th class="number-col">งบประมาณ</th>
+                            <th class="number-col">ใช้ไปแล้ว</th>
+                            <th class="number-col">คงเหลือ</th>
+                            <th>ความคืบหน้า</th>
+                            <th>สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>กำลังดึงข้อมูลจาก Google Sheets...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
